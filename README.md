@@ -1,1 +1,1 @@
-# blazor-jwt-auth
+# Blazor JWT Auth Example
