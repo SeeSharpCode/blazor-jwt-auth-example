@@ -1,0 +1,27 @@
+﻿@page "/register"
+@inject HttpClient http
+@inject IUriHelper uriHelper
+
+<h3>Register</h3>
+
+<form>
+    <div class="form-group">
+        <label for="userName">User Name</label>
+        <input type="text" class="form-control" id="userName" bind="@LoginViewModel.UserName" />
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="text" class="form-control" id="password" bind="@LoginViewModel.Password" />
+    </div>
+    <button type="button" class="btn btn-primary" onclick="@RegisterUser">Register</button>
+</form>
+
+@functions {
+private LoginViewModel LoginViewModel = new LoginViewModel();
+
+async Task RegisterUser()
+{
+    await http.SendJsonAsync(HttpMethod.Post, "/api/accounts", LoginViewModel);
+    uriHelper.NavigateTo("/");
+}
+}

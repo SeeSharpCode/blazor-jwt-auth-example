@@ -1,0 +1,34 @@
+﻿@page "/login"
+@inject HttpClient http
+@inject IUriHelper uriHelper
+
+<h3>Login</h3>
+
+<form>
+    <div class="form-group">
+        <label for="userName">User Name</label>
+        <input type="text" class="form-control" id="userName" bind="@LoginViewModel.UserName" />
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="text" class="form-control" id="password" bind="@LoginViewModel.Password" />
+    </div>
+    <button type="button" class="btn btn-primary" onclick="@LoginUser">Login</button>
+</form>
+
+@functions {
+    private LoginViewModel LoginViewModel = new LoginViewModel();
+
+    async Task LoginUser()
+    {
+        string requestBody = Json.Serialize(LoginViewModel);
+        StringContent request = new StringContent(requestBody, Encoding.UTF8, "application/json");
+        HttpResponseMessage response = await http.PostAsync("/api/accounts/login", request);
+        string responseBody = await response.Content.ReadAsStringAsync();
+        string token = Json.Deserialize<LoginResponse>(responseBody).Token;
+        Console.WriteLine("****** " + response.StatusCode + " **********");
+
+        await JSRuntime.Current.InvokeAsync<string>("blazorInterop.saveAuthToken", token);
+        uriHelper.NavigateTo("/");
+    }
+}
